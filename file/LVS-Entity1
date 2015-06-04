@@ -1,0 +1,14 @@
+LVS-Entity1 :
+
+Keepalived :
+ServicePort  : 80
+state  : MASTER
+priority  : 100
+lb_algo  : rr
+lb_kind  : DR
+virtual_ip : 172.17.0.1
+realserver1_ip : #WebServer1_ip
+realserver2_ip : #WebServer2_ip
+
+LVS :
+

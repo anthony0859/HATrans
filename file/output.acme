@@ -1,0 +1,463 @@
+System WebSystem = {
+    Component Client = {
+        Port sendHttpRequestPort = {
+
+        }
+    }
+    Component LVS-Entity1 = {
+        Port collaborationPort = {
+
+        }
+        Port healthCheckPort = {
+
+        }
+        Port directorPort = {
+
+        }
+        Representation LVS-Entity1_Rep = {
+            System LVS-Entity1_Rep  = {
+                Component Keepalived = {
+                    Port collaborationPort = {
+
+                    }
+                    Port healthCheckPort = {
+
+                    }
+                    Port bindingPort = {
+
+                    }
+                    Property ServicePort : string = "80";
+
+                    Property state : string = "MASTER";
+
+                    Property priority : string = "100";
+
+                    Property lb_algo : string = "rr";
+
+                    Property lb_kind : string = "DR";
+
+                }
+                Component LVS = {
+                    Port bindingPort = {
+
+                    }
+                    Port directorPort = {
+
+                    }
+                }
+                Connector Binding_Connector = {
+                    Role requestor = {
+
+                    }
+                    Role requestee = {
+
+                    }
+                }
+                Attachment Keepalived.bindingPort to Binding_Connector.requestor;
+                Attachment LVS.bindingPort to Binding_Connector.requestee;
+            }
+            Bindings {
+                collaborationPort to Keepalived.collaborationPort;
+                healthCheckPort to Keepalived.healthCheckPort;
+                directorPort to LVS.directorPort;
+            }
+        }
+    }
+    Component LVS-Entity2 = {
+        Port collaborationPort = {
+
+        }
+        Port healthCheckPort = {
+
+        }
+        Port directorPort = {
+
+        }
+        Representation LVS-Entity2_Rep = {
+            System LVS-Entity2_Rep  = {
+                Component Keepalived = {
+                    Port collaborationPort = {
+
+                    }
+                    Port healthCheckPort = {
+
+                    }
+                    Port bindingPort = {
+
+                    }
+                    Property ServicePort : string = "80";
+
+                    Property state : string = "BACKUP";
+
+                    Property priority : string = "80";
+
+                    Property lb_algo : string = "rr";
+
+                    Property lb_kind : string = "DR";
+
+                }
+                Component LVS = {
+                    Port bindingPort = {
+
+                    }
+                    Port directorPort = {
+
+                    }
+                }
+                Connector Binding_Connector = {
+                    Role requestor = {
+
+                    }
+                    Role requestee = {
+
+                    }
+                }
+                Attachment Keepalived.bindingPort to Binding_Connector.requestor;
+                Attachment LVS.bindingPort to Binding_Connector.requestee;
+            }
+            Bindings {
+                collaborationPort to Keepalived.collaborationPort;
+                healthCheckPort to Keepalived.healthCheckPort;
+                directorPort to LVS.directorPort;
+            }
+        }
+    }
+    Component WebServer1 = {
+        Port healthCheckPort = {
+
+        }
+        Port realServerPort = {
+
+        }
+        Port sendSQLRequestPort = {
+
+        }
+        Property ServicePort : string = "80";
+
+        Property virtual_ip : string = "172.17.0.1";
+
+    }
+    Component WebServer2 = {
+        Port healthCheckPort = {
+
+        }
+        Port realServerPort = {
+
+        }
+        Port sendSQLRequestPort = {
+
+        }
+        Property ServicePort : string = "80";
+
+        Property virtual_ip : string = "172.17.0.1";
+
+    }
+    Component MySQL-Entity1 = {
+        Port collaborationPort = {
+
+        }
+        Port dataReplicationPort = {
+
+        }
+        Representation MySQL-Entity1_Rep = {
+            System MySQL-Entity1_Rep  = {
+                Component Corosync = {
+                    Port collaborationPort = {
+
+                    }
+                    Port clusterInfoTransPort = {
+
+                    }
+                }
+                Component Pacemaker = {
+                    Port clusterInfoTransPort = {
+
+                    }
+                    Port resourceAgentPort = {
+
+                    }
+                    Port drbdRAPort = {
+
+                    }
+                }
+                Component MySQL = {
+                    Port resourceAgentPort = {
+
+                    }
+                    Port dataMountPort = {
+
+                    }
+                }
+                Component DRBD = {
+                    Port drbdRAPort = {
+
+                    }
+                    Port dataMountPort = {
+
+                    }
+                    Port dataReplicationPort = {
+
+                    }
+                }
+                Connector ClusterInfoTrans_Connector = {
+                    Role requestee = {
+
+                    }
+                    Role requestor = {
+
+                    }
+                }
+                Connector ResourceAgent_Connector = {
+                    Role requestee = {
+
+                    }
+                    Role requestor = {
+
+                    }
+                }
+                Connector DRBDResourceAgent_Connector = {
+                    Role requestee = {
+
+                    }
+                    Role requestor = {
+
+                    }
+                }
+                Connector DataMount_Connector = {
+                    Role requestee = {
+
+                    }
+                    Role requestor = {
+
+                    }
+                }
+                Attachment Pacemaker.drbdRAPort to DRBDResourceAgent_Connector.requestor;
+                Attachment DRBD.drbdRAPort to DRBDResourceAgent_Connector.requestee;
+                Attachment MySQL.dataMountPort to DataMount_Connector.requestee;
+                Attachment DRBD.dataMountPort to DataMount_Connector.requestor;
+                Attachment Corosync.clusterInfoTransPort to ClusterInfoTrans_Connector.requestee;
+                Attachment Pacemaker.clusterInfoTransPort to ClusterInfoTrans_Connector.requestor;
+                Attachment Pacemaker.resourceAgentPort to ResourceAgent_Connector.requestor;
+                Attachment MySQL.resourceAgentPort to ResourceAgent_Connector.requestee;
+            }
+            Bindings {
+                collaborationPort to Corosync.collaborationPort;
+                dataReplicationPort to DRBD.dataReplicationPort;
+            }
+        }
+    }
+    Component MySQL-Entity2 = {
+        Port collaborationPort = {
+
+        }
+        Port dataReplicationPort = {
+
+        }
+        Representation MySQL-Entity2_Rep = {
+            System MySQL-Entity2_Rep  = {
+                Component Corosync = {
+                    Port collaborationPort = {
+
+                    }
+                    Port clusterInfoTransPort = {
+
+                    }
+                }
+                Component Pacemaker = {
+                    Port clusterInfoTransPort = {
+
+                    }
+                    Port resourceAgentPort = {
+
+                    }
+                    Port drbdRAPort = {
+
+                    }
+                }
+                Component MySQL = {
+                    Port resourceAgentPort = {
+
+                    }
+                    Port dataMountPort = {
+
+                    }
+                }
+                Component DRBD = {
+                    Port drbdRAPort = {
+
+                    }
+                    Port dataMountPort = {
+
+                    }
+                    Port dataReplicationPort = {
+
+                    }
+                }
+                Connector ClusterInfoTrans_Connector = {
+                    Role requestee = {
+
+                    }
+                    Role requestor = {
+
+                    }
+                }
+                Connector ResourceAgent_Connector = {
+                    Role requestee = {
+
+                    }
+                    Role requestor = {
+
+                    }
+                }
+                Connector DRBDResourceAgent_Connector = {
+                    Role requestee = {
+
+                    }
+                    Role requestor = {
+
+                    }
+                }
+                Connector DataMount_Connector = {
+                    Role requestee = {
+
+                    }
+                    Role requestor = {
+
+                    }
+                }
+                Attachment Pacemaker.drbdRAPort to DRBDResourceAgent_Connector.requestor;
+                Attachment DRBD.drbdRAPort to DRBDResourceAgent_Connector.requestee;
+                Attachment MySQL.dataMountPort to DataMount_Connector.requestee;
+                Attachment DRBD.dataMountPort to DataMount_Connector.requestor;
+                Attachment Corosync.clusterInfoTransPort to ClusterInfoTrans_Connector.requestee;
+                Attachment Pacemaker.clusterInfoTransPort to ClusterInfoTrans_Connector.requestor;
+                Attachment Pacemaker.resourceAgentPort to ResourceAgent_Connector.requestor;
+                Attachment MySQL.resourceAgentPort to ResourceAgent_Connector.requestee;
+            }
+            Bindings {
+                collaborationPort to Corosync.collaborationPort;
+                dataReplicationPort to DRBD.dataReplicationPort;
+            }
+        }
+    }
+    Connector HealthCheck_Connector1 = {
+        Role monitor = {
+
+        }
+        Role monitored1 = {
+
+        }
+        Role monitored2 = {
+
+        }
+    }
+    Connector LoadBalancing_Connector1 = {
+        Role director = {
+
+        }
+        Role realServer1 = {
+
+        }
+        Role realServer2 = {
+
+        }
+        Property virtual_ip : string = "172.17.0.1";
+
+    }
+    Connector HealthCheck_Connector2 = {
+        Role monitor = {
+
+        }
+        Role monitored1 = {
+
+        }
+        Role monitored2 = {
+
+        }
+    }
+    Connector LoadBalancing_Connector2 = {
+        Role director = {
+
+        }
+        Role realServer1 = {
+
+        }
+        Role realServer2 = {
+
+        }
+        Property virtual_ip : string = "172.17.0.1";
+
+    }
+    Connector VRRPCollaboration_Connector = {
+        Role requestor = {
+
+        }
+        Role master = {
+
+        }
+        Role slave = {
+
+        }
+        Property virtual_ip : string = "172.17.0.1";
+
+        Property master_ip : string = "#WebServer1_ip";
+
+        Property slave_ip : string = "#WebServer2_ip";
+
+        Property implemetation : string = "VRRP stack of keepalived";
+
+    }
+    Connector ClusterManagementCollaboration_Connector1 = {
+        Role requestor = {
+
+        }
+        Role master = {
+
+        }
+        Role slave = {
+
+        }
+    }
+    Connector ClusterManagementCollaboration_Connector2 = {
+        Role requestor = {
+
+        }
+        Role master = {
+
+        }
+        Role slave = {
+
+        }
+    }
+    Connector DataReplication_Connector = {
+        Role master = {
+
+        }
+        Role slave = {
+
+        }
+    }
+    Attachment LVS-Entity1.healthCheckPort to HealthCheck_Connector1.monitor;
+    Attachment WebServer1.healthCheckPort to HealthCheck_Connector1.monitored1;
+    Attachment WebServer2.healthCheckPort to HealthCheck_Connector1.monitored2;
+    Attachment LVS-Entity2.healthCheckPort to HealthCheck_Connector2.monitor;
+    Attachment WebServer1.healthCheckPort to HealthCheck_Connector2.monitored1;
+    Attachment WebServer2.healthCheckPort to HealthCheck_Connector2.monitored2;
+    Attachment LVS-Entity1.directorPort to LoadBalancing_Connector1.director;
+    Attachment WebServer1.realServerPort to LoadBalancing_Connector1.realServer1;
+    Attachment WebServer2.realServerPort to LoadBalancing_Connector1.realServer2;
+    Attachment LVS-Entity2.directorPort to LoadBalancing_Connector2.director;
+    Attachment WebServer1.realServerPort to LoadBalancing_Connector2.realServer1;
+    Attachment WebServer2.realServerPort to LoadBalancing_Connector2.realServer2;
+    Attachment Client.sendHttpRequestPort to VRRPCollaboration_Connector.requestor;
+    Attachment LVS-Entity1.collaborationPort to VRRPCollaboration_Connector.master;
+    Attachment LVS-Entity2.collaborationPort to VRRPCollaboration_Connector.slave;
+    Attachment WebServer1.sendSQLRequestPort to ClusterManagementCollaboration_Connector1.requestor;
+    Attachment MySQL-Entity1.collaborationPort to ClusterManagementCollaboration_Connector1.master;
+    Attachment MySQL-Entity2.collaborationPort to ClusterManagementCollaboration_Connector1.slave;
+    Attachment WebServer2.sendSQLRequestPort to ClusterManagementCollaboration_Connector2.requestor;
+    Attachment MySQL-Entity1.collaborationPort to ClusterManagementCollaboration_Connector2.master;
+    Attachment MySQL-Entity2.collaborationPort to ClusterManagementCollaboration_Connector2.slave;
+    Attachment MySQL-Entity1.dataReplicationPort to DataReplication_Connector.master;
+    Attachment MySQL-Entity2.dataReplicationPort to DataReplication_Connector.slave;
+}

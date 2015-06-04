@@ -1,0 +1,14 @@
+Client : Client
+
+LVS-Entity1 : Keepalived LVS 
+
+LVS-Entity2 : Keepalived LVS 
+
+WebServer1 : WebServer
+
+WebServer2 : WebServer
+
+MySQL-Entity1 : Corosync Pacemaker MySQL DRBD 
+
+MySQL-Entity2 : Corosync Pacemaker MySQL DRBD 
+
